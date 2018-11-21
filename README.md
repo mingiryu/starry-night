@@ -1,6 +1,8 @@
 # starry-night
 Particle FFT visualization of music and visual interaction through webcam/OpenCV
 
+![starry-night.png](https://github.com/mingir2/starry-night/blob/master/starry_night.png)
+
 # How to
 - make, make run
 - If that doesn't work, make sure to ./install_codes.sh.
