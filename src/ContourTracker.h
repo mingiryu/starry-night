@@ -4,32 +4,45 @@
 #include "ofxOpenCv.h"
 #include "ofxGui.h"
 
-class ContourTracker {
-	public:
-		void setup(int width_, int height_);
-		void update();
-		void draw();
+class ContourTracker
+{
+  public:
+	void setup();
+	void update();
+	void draw();
+	void mousePressed(int x, int y, int button); // Right click to select color
+	void keyPressed(int key);					 // 'v' := video, 'g' := gui
 
-		vector<ofPolyline> & getOutlines();
-		void mousePressed(int x, int y, int button);
+	vector<ofPath> &getPaths();
+	vector<ofPoint> findSpotlight(ofImage &background);
 
-	private:
-		ofVideoGrabber vidGrabber;
-		int width, height, scale;
+  private:
+	ofVideoGrabber vidGrabber;
+	ofxPanel gui;
+	bool drawGui, drawVideo;
 
-		ofxCvColorImage colorImage;
-		ofxCvGrayscaleImage grayImage, grayBgImage, grayDiff;
-		ofxCvFloatImage grayImageFloat, grayBgFloat; // Used for adaptive background, image multiplication.
+	ofxCvColorImage colorImage;
+	ofxCvGrayscaleImage grayImage, grayBgImage, grayDiff;
+	ofxCvFloatImage grayImageFloat, grayBgFloat; // Used for adaptive background, image multiplication.
+	ofParameter<int> blurCoefficient;
 
-		ofxPanel gui;
+	ofxCvContourFinder contourFinder;
+	ofParameter<int> threshold, minArea, maxArea, maxContours;
+	ofParameter<bool> bApproximateContour;
+	bool bLearnBackground;
 
-		ofColor targetColor; // User selected color.
-		ofParameter<float> delta; // Maximum distance between targetColor and pixel color.
+	ofColor targetColor;	  // User selected color, selected through right mouse click
+	ofParameter<float> delta; // Maximum distance between targetColor and pixel color.
 
-		ofxCvContourFinder contourFinder;
-		ofParameter<int> threshold, minArea, maxArea, maxContours;
-		ofParameter<bool> bApproximateContour;
-		bool bLearnBackground;
+	vector<ofPath> paths;
 
-		vector<ofPolyline> outlines; // Outlines of the contour blobs
+	/**
+	 * Filters user selected color using Euclidean distance in RGB space.
+	 */
+	void applyColorFilter();
+
+	/**
+	 * Use adaptive background to set grayBgImage that is used to make grayDiff.
+	 */
+	void updateBackground();
 };
